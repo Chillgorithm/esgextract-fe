@@ -74,7 +74,6 @@ st.markdown("""
 
 def main():
     """메인 함수"""
-    
     # 헤더
     st.markdown('<div class="main-header">📈 연도별 비교 분석</div>', 
                 unsafe_allow_html=True)
@@ -201,7 +200,15 @@ def show_company_trend_analysis():
             else:
                 st.warning("선택한 연도 범위에 해당하는 데이터가 없습니다.")
         else:
-            st.warning(f"{selected_company}의 데이터를 찾을 수 없습니다.")
+            st.error(f"❌ {selected_company}의 데이터를 찾을 수 없습니다.")
+            st.info("💡 **해결 방법**: 다른 회사를 선택하거나 데이터 연도 범위를 조정해보세요.")
+            
+            # 사용 가능한 회사 목록 표시
+            available_companies = get_companies()
+            if available_companies:
+                st.write("📋 **사용 가능한 회사 목록:**")
+                for i, company in enumerate(available_companies, 1):
+                    st.write(f"  {i}. {company}")
 
 def show_safety_charts(data: pd.DataFrame, company: str):
     """안전 지표 차트 표시"""

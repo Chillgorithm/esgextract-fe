@@ -197,9 +197,27 @@ def show_company_comparison_analysis():
             with ranking_tab:
                 show_ranking_analysis(comparison_data)
         else:
-            st.warning("선택한 업체들의 데이터를 찾을 수 없습니다.")
+            st.error("❌ 선택한 업체들의 데이터를 찾을 수 없습니다.")
+            st.info("💡 **해결 방법**: 다른 회사를 선택하거나 최신 연도 데이터가 있는 회사를 선택해주세요.")
     else:
-        st.info("비교할 업체를 선택해주세요.")
+        st.info("ℹ️ 비교할 업체를 선택해주세요.")
+        
+        # 안내 메시지 개선
+        st.markdown("""
+        ### 📋 **사용 방법**
+        1. **왼쪽 사이드바**에서 비교할 회사를 선택하세요
+        2. **최대 5개**까지 선택 가능합니다
+        3. 선택된 회사들의 **ESG 지표 비교**를 확인할 수 있습니다
+        """)
+        
+        # 사용 가능한 회사 목록 표시
+        available_companies = get_companies()
+        if available_companies:
+            st.write("📋 **사용 가능한 회사 목록:**")
+            cols = st.columns(3)
+            for i, company in enumerate(available_companies):
+                with cols[i % 3]:
+                    st.write(f"• {company}")
 
 def show_safety_comparison_charts(data: pd.DataFrame):
     """안전 지표 비교 차트 표시"""
