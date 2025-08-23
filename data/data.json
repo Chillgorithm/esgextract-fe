@@ -1,0 +1,260 @@
+{
+  "companies": {
+    "Samsung": {
+      "2023": {
+        "safety": {
+          "accident_rate": 2.1,
+          "fatalities": 3,
+          "safety_audit_compliance": 94.5,
+          "workers_compensation": 150.2
+        },
+        "environment": {
+          "carbon_emissions": 45000,
+          "energy_usage": 125.8,
+          "renewable_energy_ratio": 18.5,
+          "construction_waste": 12500,
+          "recycling_rate": 78.2
+        }
+      },
+      "2024": {
+        "safety": {
+          "accident_rate": 1.8,
+          "fatalities": 2,
+          "safety_audit_compliance": 96.2,
+          "workers_compensation": 142.8
+        },
+        "environment": {
+          "carbon_emissions": 42000,
+          "energy_usage": 118.6,
+          "renewable_energy_ratio": 22.1,
+          "construction_waste": 11800,
+          "recycling_rate": 81.5
+        }
+      },
+      "2025": {
+        "safety": {
+          "accident_rate": 1.5,
+          "fatalities": 1,
+          "safety_audit_compliance": 97.8,
+          "workers_compensation": 128.5
+        },
+        "environment": {
+          "carbon_emissions": 38500,
+          "energy_usage": 112.3,
+          "renewable_energy_ratio": 28.7,
+          "construction_waste": 10900,
+          "recycling_rate": 85.3
+        }
+      }
+    },
+    "Hyundai": {
+      "2023": {
+        "safety": {
+          "accident_rate": 2.3,
+          "fatalities": 4,
+          "safety_audit_compliance": 92.1,
+          "workers_compensation": 168.9
+        },
+        "environment": {
+          "carbon_emissions": 52000,
+          "energy_usage": 135.2,
+          "renewable_energy_ratio": 15.3,
+          "construction_waste": 14200,
+          "recycling_rate": 74.8
+        }
+      },
+      "2024": {
+        "safety": {
+          "accident_rate": 2.0,
+          "fatalities": 3,
+          "safety_audit_compliance": 94.6,
+          "workers_compensation": 155.3
+        },
+        "environment": {
+          "carbon_emissions": 48500,
+          "energy_usage": 128.7,
+          "renewable_energy_ratio": 19.8,
+          "construction_waste": 13400,
+          "recycling_rate": 78.2
+        }
+      },
+      "2025": {
+        "safety": {
+          "accident_rate": 1.7,
+          "fatalities": 2,
+          "safety_audit_compliance": 96.3,
+          "workers_compensation": 142.7
+        },
+        "environment": {
+          "carbon_emissions": 45200,
+          "energy_usage": 122.4,
+          "renewable_energy_ratio": 24.5,
+          "construction_waste": 12600,
+          "recycling_rate": 82.1
+        }
+      }
+    },
+    "LG": {
+      "2023": {
+        "safety": {
+          "accident_rate": 1.9,
+          "fatalities": 2,
+          "safety_audit_compliance": 95.8,
+          "workers_compensation": 138.4
+        },
+        "environment": {
+          "carbon_emissions": 38000,
+          "energy_usage": 118.5,
+          "renewable_energy_ratio": 21.2,
+          "construction_waste": 10800,
+          "recycling_rate": 79.6
+        }
+      },
+      "2024": {
+        "safety": {
+          "accident_rate": 1.6,
+          "fatalities": 1,
+          "safety_audit_compliance": 97.2,
+          "workers_compensation": 125.8
+        },
+        "environment": {
+          "carbon_emissions": 35200,
+          "energy_usage": 112.8,
+          "renewable_energy_ratio": 26.4,
+          "construction_waste": 10100,
+          "recycling_rate": 83.2
+        }
+      },
+      "2025": {
+        "safety": {
+          "accident_rate": 1.3,
+          "fatalities": 1,
+          "safety_audit_compliance": 98.5,
+          "workers_compensation": 118.2
+        },
+        "environment": {
+          "carbon_emissions": 32800,
+          "energy_usage": 108.2,
+          "renewable_energy_ratio": 31.8,
+          "construction_waste": 9400,
+          "recycling_rate": 86.7
+        }
+      }
+    },
+    "Google": {
+      "2023": {
+        "safety": {
+          "accident_rate": 1.2,
+          "fatalities": 0,
+          "safety_audit_compliance": 98.5,
+          "workers_compensation": 85.6
+        },
+        "environment": {
+          "carbon_emissions": 28000,
+          "energy_usage": 95.3,
+          "renewable_energy_ratio": 45.8,
+          "construction_waste": 7800,
+          "recycling_rate": 88.5
+        }
+      },
+      "2024": {
+        "safety": {
+          "accident_rate": 1.0,
+          "fatalities": 0,
+          "safety_audit_compliance": 99.1,
+          "workers_compensation": 78.2
+        },
+        "environment": {
+          "carbon_emissions": 24500,
+          "energy_usage": 88.7,
+          "renewable_energy_ratio": 52.3,
+          "construction_waste": 7200,
+          "recycling_rate": 91.2
+        }
+      },
+      "2025": {
+        "safety": {
+          "accident_rate": 0.8,
+          "fatalities": 0,
+          "safety_audit_compliance": 99.6,
+          "workers_compensation": 71.8
+        },
+        "environment": {
+          "carbon_emissions": 21200,
+          "energy_usage": 82.4,
+          "renewable_energy_ratio": 58.7,
+          "construction_waste": 6600,
+          "recycling_rate": 93.8
+        }
+      }
+    },
+    "Tesla": {
+      "2023": {
+        "safety": {
+          "accident_rate": 1.4,
+          "fatalities": 1,
+          "safety_audit_compliance": 97.2,
+          "workers_compensation": 92.3
+        },
+        "environment": {
+          "carbon_emissions": 32000,
+          "energy_usage": 102.8,
+          "renewable_energy_ratio": 38.5,
+          "construction_waste": 8900,
+          "recycling_rate": 85.2
+        }
+      },
+      "2024": {
+        "safety": {
+          "accident_rate": 1.1,
+          "fatalities": 0,
+          "safety_audit_compliance": 98.4,
+          "workers_compensation": 84.7
+        },
+        "environment": {
+          "carbon_emissions": 28800,
+          "energy_usage": 96.2,
+          "renewable_energy_ratio": 44.2,
+          "construction_waste": 8200,
+          "recycling_rate": 88.6
+        }
+      },
+      "2025": {
+        "safety": {
+          "accident_rate": 0.9,
+          "fatalities": 0,
+          "safety_audit_compliance": 99.1,
+          "workers_compensation": 78.5
+        },
+        "environment": {
+          "carbon_emissions": 25600,
+          "energy_usage": 90.1,
+          "renewable_energy_ratio": 50.8,
+          "construction_waste": 7500,
+          "recycling_rate": 91.4
+        }
+      }
+    }
+  },
+  "metadata": {
+    "last_updated": "2024-12-19",
+    "units": {
+      "accident_rate": "‰ (per thousand)",
+      "fatalities": "count",
+      "safety_audit_compliance": "%",
+      "workers_compensation": "million KRW",
+      "carbon_emissions": "tCO₂e",
+      "energy_usage": "kWh/㎡",
+      "renewable_energy_ratio": "%",
+      "construction_waste": "ton",
+      "recycling_rate": "%"
+    },
+    "companies": ["Samsung", "Hyundai", "LG", "Google", "Tesla"],
+    "years": ["2023", "2024", "2025"],
+    "categories": {
+      "safety": ["accident_rate", "fatalities", "safety_audit_compliance", "workers_compensation"],
+      "environment": ["carbon_emissions", "energy_usage", "renewable_energy_ratio", "construction_waste", "recycling_rate"]
+    }
+  }
+}
+
