@@ -51,6 +51,34 @@ st.markdown("""
         margin-bottom: 1rem;
     }
     
+    .metric-box {
+        background: linear-gradient(135deg, #e8f4fd 0%, #f0f8ff 100%);
+        padding: 1.2rem;
+        border-radius: 15px;
+        text-align: center;
+        border: 1px solid #d1ecf1;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .metric-box:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    
+    .metric-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #1565c0;
+        margin-bottom: 0.5rem;
+    }
+    
+    .metric-label {
+        font-size: 0.9rem;
+        color: #546e7a;
+        font-weight: 500;
+    }
+    
     .mode-selector {
         background-color: #e3f2fd;
         padding: 1.5rem;
@@ -194,33 +222,26 @@ def main():
     """메인 페이지 함수"""
     
     # 헤더
-    st.markdown('<div class="main-header">🏗️ ESG 건설업체 데이터 대시보드</div>', 
-                unsafe_allow_html=True)
+    st.markdown("""
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <h1 style="font-size: 3rem; font-weight: bold; color: #1f77b4; margin-bottom: 0.5rem;">
+            ESGExtract
+        </h1>
+        <p style="font-size: 1.2rem; color: #666; margin: 0; font-weight: 300;">
+            건설업체 ESG 데이터 대시보드
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    # 프로젝트 소개
-    with st.container():
-        st.markdown('<div class="info-box">', unsafe_allow_html=True)
-        st.markdown("""
-        ### 📊 대시보드 소개
-        이 대시보드는 주요 건설업체들의 **ESG(Environmental, Social, Governance)** 성과를 
-        시각화하고 비교 분석할 수 있는 도구입니다.
-        
-        **📈 주요 기능:**
-        - 연도별 ESG 지표 트렌드 분석
-        - 업체별 성과 비교 및 벤치마킹
-        - 안전 및 환경 지표 인터랙티브 시각화
-        """)
-        st.markdown('</div>', unsafe_allow_html=True)
+
     
     # 모드 선택 섹션
-    st.markdown('<div class="mode-selector">', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">📊 분석 모드 선택</div>', 
-                unsafe_allow_html=True)
+    st.markdown('### 📊 분석 모드 선택')
     
     col1, col2 = st.columns(2)
     
     with col1:
-        if st.button("📈 연도별 비교 분석", use_container_width=True, type="primary"):
+        if st.button("📈 연도별 비교 분석", use_container_width=True, type="secondary"):
             st.session_state.analysis_mode = "year_comparison"
             st.rerun()
     
@@ -228,8 +249,6 @@ def main():
         if st.button("🏢 업체별 비교 분석", use_container_width=True, type="secondary"):
             st.session_state.analysis_mode = "company_comparison"
             st.rerun()
-    
-    st.markdown('</div>', unsafe_allow_html=True)
     
     # 현재 선택된 모드 표시 및 페이지 라우팅
     if 'analysis_mode' in st.session_state:
@@ -244,8 +263,7 @@ def main():
 def show_data_overview():
     """데이터 개요 페이지"""
     st.markdown("---")
-    st.markdown('<div class="sub-header">📋 데이터 개요</div>', 
-                unsafe_allow_html=True)
+    st.markdown('### 📋 데이터 개요')
     
     # 기본 정보
     companies = get_companies()
@@ -254,13 +272,31 @@ def show_data_overview():
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.metric("분석 대상 업체", f"{len(companies)}개 회사")
+        st.markdown(f"""
+        <div class="metric-box">
+            <div class="metric-value">{len(companies)}개</div>
+            <div class="metric-label">분석 대상 업체</div>
+        </div>
+        """, unsafe_allow_html=True)
         
     with col2:
-        st.metric("데이터 기간", f"{min(years)} - {max(years)}")
+        st.markdown(f"""
+        <div class="metric-box">
+            <div class="metric-value">{min(years)} - {max(years)}</div>
+            <div class="metric-label">데이터 기간</div>
+        </div>
+        """, unsafe_allow_html=True)
         
     with col3:
-        st.metric("총 지표 수", "9개 ESG 지표")
+        st.markdown("""
+        <div class="metric-box">
+            <div class="metric-value">9개</div>
+            <div class="metric-label">ESG 지표</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # 구분선과 간격
+    st.markdown("---")
     
     # 최신 연도 데이터 테이블
     st.markdown("### 📊 최신 연도 데이터 (2025년)")
@@ -285,7 +321,7 @@ def show_data_overview():
             
                 # 수치 컬럼 포맷팅
                 numeric_columns = [
-                    '사고율(‰)', '사망자수', '안전감사 준수율(%)', '산재보험금(백만원)',
+                    '사고율(‰)', '사망자수', '안전감사 준수율(%)', '재생에너지량(GWh)',
                     '탄소배출량(tCO₂e)', '에너지사용량(kWh/㎡)', '재생에너지비율(%)',
                     '건설폐기물(ton)', '재활용률(%)'
                 ]
@@ -293,13 +329,13 @@ def show_data_overview():
                 for col in numeric_columns:
                     if col in formatted_data.columns:
                         if '(%)' in col:
-                            formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}%")
+                            formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}%" if x is not None else "N/A")
                         elif col == '사고율(‰)':
-                            formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}‰")
+                            formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}‰" if x is not None else "N/A")
                         elif col in ['탄소배출량(tCO₂e)', '건설폐기물(ton)']:
-                            formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:,.0f}")
+                            formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:,.0f}" if x is not None else "N/A")
                         else:
-                            formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}")
+                            formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}" if x is not None else "N/A")
                 
                 st.dataframe(
                     formatted_data.drop('연도', axis=1),
@@ -380,7 +416,6 @@ def show_data_overview():
     </script>
     """, unsafe_allow_html=True)
     
-    # 지표 설명
     with st.expander("📋 ESG 지표 설명"):
         col1, col2 = st.columns(2)
         
@@ -390,7 +425,6 @@ def show_data_overview():
             - **사고율(‰)**: 천 명당 산업재해 발생률
             - **사망자수**: 연간 작업장 내 사망자 수
             - **안전감사 준수율(%)**: 안전 규정 준수 비율
-            - **산재보험금(백만원)**: 산업재해 보험금 지급액
             """)
         
         with col2:
@@ -399,6 +433,7 @@ def show_data_overview():
             - **탄소배출량(tCO₂e)**: 연간 이산화탄소 배출량
             - **에너지사용량(kWh/㎡)**: 단위면적당 에너지 소비량
             - **재생에너지비율(%)**: 전체 에너지 중 재생에너지 비중
+            - **재생에너지량(GWh)**: 재생에너지 절대량
             - **건설폐기물(ton)**: 연간 건설폐기물 발생량
             - **재활용률(%)**: 폐기물 재활용 비율
             """)

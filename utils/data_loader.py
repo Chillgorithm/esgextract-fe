@@ -57,38 +57,32 @@ def get_latest_year_data() -> pd.DataFrame:
         pd.DataFrame: 최신 연도 데이터
     """
     data = load_data()
-    companies = data.get('companies', {})
     years = get_years()
     
     if not years:
         return pd.DataFrame()
     
-    latest_year = max(years)
+    latest_year = max(years, key=int)
     
     rows = []
-    for company, company_data in companies.items():
-        if latest_year in company_data:
-            row = {'회사': company, '연도': latest_year}
+    for key, company_data in data.items():
+        if key == 'metadata':
+            continue
             
-            # 안전 지표
-            safety_data = company_data[latest_year].get('safety', {})
-            row.update({
-                '사고율(‰)': safety_data.get('accident_rate', 0),
-                '사망자수': safety_data.get('fatalities', 0),
-                '안전감사 준수율(%)': safety_data.get('safety_audit_compliance', 0),
-                '산재보험금(백만원)': safety_data.get('workers_compensation', 0)
-            })
-            
-            # 환경 지표
-            env_data = company_data[latest_year].get('environment', {})
-            row.update({
-                '탄소배출량(tCO₂e)': env_data.get('carbon_emissions', 0),
-                '에너지사용량(kWh/㎡)': env_data.get('energy_usage', 0),
-                '재생에너지비율(%)': env_data.get('renewable_energy_ratio', 0),
-                '건설폐기물(ton)': env_data.get('construction_waste', 0),
-                '재활용률(%)': env_data.get('recycling_rate', 0)
-            })
-            
+        if company_data.get('year') == int(latest_year):
+            row = {
+                '회사': company_data.get('company_name', ''),
+                '연도': company_data.get('year', ''),
+                '사고율(‰)': company_data.get('accident_rate', 0),
+                '사망자수': company_data.get('fatality_rate', 0),
+                '안전감사 준수율(%)': company_data.get('safety_inspection_compliance_rate', 0),
+                '탄소배출량(tCO₂e)': company_data.get('carbon_emissions', 0),
+                '에너지사용량(kWh/㎡)': company_data.get('energy_consumption', 0),
+                '재생에너지비율(%)': company_data.get('renewable_energy_ratio', 0),
+                '재생에너지량(GWh)': company_data.get('renewable_energy_amount', 0),
+                '건설폐기물(ton)': company_data.get('construction_waste', 0),
+                '재활용률(%)': company_data.get('recycling_rate', 0)
+            }
             rows.append(row)
     
     return pd.DataFrame(rows)
@@ -105,39 +99,32 @@ def get_company_trend_data(company: str) -> pd.DataFrame:
         pd.DataFrame: 연도별 트렌드 데이터
     """
     data = load_data()
-    companies = data.get('companies', {})
     
-    if company not in companies:
-        return pd.DataFrame()
-    
-    company_data = companies[company]
     rows = []
+    for key, company_data in data.items():
+        if key == 'metadata':
+            continue
+            
+        if company_data.get('company_name') == company:
+            row = {
+                '회사': company_data.get('company_name', ''),
+                '연도': company_data.get('year', ''),
+                '사고율(‰)': company_data.get('accident_rate', 0),
+                '사망자수': company_data.get('fatality_rate', 0),
+                '안전감사 준수율(%)': company_data.get('safety_inspection_compliance_rate', 0),
+                '탄소배출량(tCO₂e)': company_data.get('carbon_emissions', 0),
+                '에너지사용량(kWh/㎡)': company_data.get('energy_consumption', 0),
+                '재생에너지비율(%)': company_data.get('renewable_energy_ratio', 0),
+                '재생에너지량(GWh)': company_data.get('renewable_energy_amount', 0),
+                '건설폐기물(ton)': company_data.get('construction_waste', 0),
+                '재활용률(%)': company_data.get('recycling_rate', 0)
+            }
+            rows.append(row)
     
-    for year, year_data in company_data.items():
-        row = {'회사': company, '연도': year}
-        
-        # 안전 지표
-        safety_data = year_data.get('safety', {})
-        row.update({
-            '사고율(‰)': safety_data.get('accident_rate', 0),
-            '사망자수': safety_data.get('fatalities', 0),
-            '안전감사 준수율(%)': safety_data.get('safety_audit_compliance', 0),
-            '산재보험금(백만원)': safety_data.get('workers_compensation', 0)
-        })
-        
-        # 환경 지표
-        env_data = year_data.get('environment', {})
-        row.update({
-            '탄소배출량(tCO₂e)': env_data.get('carbon_emissions', 0),
-            '에너지사용량(kWh/㎡)': env_data.get('energy_usage', 0),
-            '재생에너지비율(%)': env_data.get('renewable_energy_ratio', 0),
-            '건설폐기물(ton)': env_data.get('construction_waste', 0),
-            '재활용률(%)': env_data.get('recycling_rate', 0)
-        })
-        
-        rows.append(row)
-    
-    return pd.DataFrame(rows)
+    df = pd.DataFrame(rows)
+    if not df.empty:
+        df = df.sort_values('연도')
+    return df
 
 @st.cache_data(ttl=300)
 def get_multi_company_data(companies: List[str], year: str = None) -> pd.DataFrame:
@@ -152,37 +139,33 @@ def get_multi_company_data(companies: List[str], year: str = None) -> pd.DataFra
         pd.DataFrame: 다중 회사 비교 데이터
     """
     data = load_data()
-    companies_data = data.get('companies', {})
     
     if year is None:
         years = get_years()
-        year = max(years) if years else '2025'
+        year = max(years, key=int) if years else '2025'
     
     rows = []
-    for company in companies:
-        if company in companies_data and year in companies_data[company]:
-            year_data = companies_data[company][year]
-            row = {'회사': company, '연도': year}
+    for key, company_data in data.items():
+        if key == 'metadata':
+            continue
             
-            # 안전 지표
-            safety_data = year_data.get('safety', {})
-            row.update({
-                '사고율(‰)': safety_data.get('accident_rate', 0),
-                '사망자수': safety_data.get('fatalities', 0),
-                '안전감사 준수율(%)': safety_data.get('safety_audit_compliance', 0),
-                '산재보험금(백만원)': safety_data.get('workers_compensation', 0)
-            })
-            
-            # 환경 지표
-            env_data = year_data.get('environment', {})
-            row.update({
-                '탄소배출량(tCO₂e)': env_data.get('carbon_emissions', 0),
-                '에너지사용량(kWh/㎡)': env_data.get('energy_usage', 0),
-                '재생에너지비율(%)': env_data.get('renewable_energy_ratio', 0),
-                '건설폐기물(ton)': env_data.get('construction_waste', 0),
-                '재활용률(%)': env_data.get('recycling_rate', 0)
-            })
-            
+        company_name = company_data.get('company_name')
+        data_year = company_data.get('year')
+        
+        if company_name in companies and data_year == int(year):
+            row = {
+                '회사': company_name,
+                '연도': data_year,
+                '사고율(‰)': company_data.get('accident_rate', 0),
+                '사망자수': company_data.get('fatality_rate', 0),
+                '안전감사 준수율(%)': company_data.get('safety_inspection_compliance_rate', 0),
+                '탄소배출량(tCO₂e)': company_data.get('carbon_emissions', 0),
+                '에너지사용량(kWh/㎡)': company_data.get('energy_consumption', 0),
+                '재생에너지비율(%)': company_data.get('renewable_energy_ratio', 0),
+                '재생에너지량(GWh)': company_data.get('renewable_energy_amount', 0),
+                '건설폐기물(ton)': company_data.get('construction_waste', 0),
+                '재활용률(%)': company_data.get('recycling_rate', 0)
+            }
             rows.append(row)
     
     return pd.DataFrame(rows)
@@ -197,3 +180,37 @@ def get_units() -> Dict[str, str]:
     data = load_data()
     return data.get('metadata', {}).get('units', {})
 
+def get_all_company_data_by_year(year: str) -> pd.DataFrame:
+    """
+    특정 연도의 모든 회사 데이터를 반환합니다.
+    
+    Args:
+        year (str): 연도
+        
+    Returns:
+        pd.DataFrame: 해당 연도의 모든 회사 데이터
+    """
+    data = load_data()
+    
+    rows = []
+    for key, company_data in data.items():
+        if key == 'metadata':
+            continue
+            
+        if company_data.get('year') == int(year):
+            row = {
+                '회사': company_data.get('company_name', ''),
+                '연도': company_data.get('year', ''),
+                '사고율(‰)': company_data.get('accident_rate', 0),
+                '사망자수': company_data.get('fatality_rate', 0),
+                '안전감사 준수율(%)': company_data.get('safety_inspection_compliance_rate', 0),
+                '탄소배출량(tCO₂e)': company_data.get('carbon_emissions', 0),
+                '에너지사용량(kWh/㎡)': company_data.get('energy_consumption', 0),
+                '재생에너지비율(%)': company_data.get('renewable_energy_ratio', 0),
+                '재생에너지량(GWh)': company_data.get('renewable_energy_amount', 0),
+                '건설폐기물(ton)': company_data.get('construction_waste', 0),
+                '재활용률(%)': company_data.get('recycling_rate', 0)
+            }
+            rows.append(row)
+    
+    return pd.DataFrame(rows)

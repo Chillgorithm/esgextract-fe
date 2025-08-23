@@ -104,7 +104,7 @@ def show_latest_data_table():
             
             # 수치 컬럼 포맷팅
             numeric_columns = [
-                '사고율(‰)', '사망자수', '안전감사 준수율(%)', '산재보험금(백만원)',
+                '사고율(‰)', '사망자수', '안전감사 준수율(%)',
                 '탄소배출량(tCO₂e)', '에너지사용량(kWh/㎡)', '재생에너지비율(%)',
                 '건설폐기물(ton)', '재활용률(%)'
             ]
@@ -112,13 +112,13 @@ def show_latest_data_table():
             for col in numeric_columns:
                 if col in formatted_data.columns:
                     if '(%)' in col:
-                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}%")
+                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}%" if x is not None else "N/A")
                     elif col == '사고율(‰)':
-                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}‰")
+                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}‰" if x is not None else "N/A")
                     elif col in ['탄소배출량(tCO₂e)', '건설폐기물(ton)']:
-                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:,.0f}")
+                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:,.0f}" if x is not None else "N/A")
                     else:
-                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}")
+                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}" if x is not None else "N/A")
             
             st.dataframe(
                 formatted_data.drop('연도', axis=1),
@@ -178,15 +178,16 @@ def show_company_trend_analysis():
         trend_data = get_company_trend_data(selected_company)
         
         if not trend_data.empty:
-            # 연도 범위에 따른 데이터 필터링
+            # 연도 범위에 따른 데이터 필터링 (타입 변환)
             if isinstance(year_range, tuple):
-                start_year, end_year = year_range
+                start_year, end_year = int(year_range[0]), int(year_range[1])
                 filtered_data = trend_data[
                     (trend_data['연도'] >= start_year) & 
                     (trend_data['연도'] <= end_year)
                 ]
             else:
-                filtered_data = trend_data[trend_data['연도'] == year_range]
+                year_value = int(year_range)
+                filtered_data = trend_data[trend_data['연도'] == year_value]
             
             if not filtered_data.empty:
                 # 탭으로 안전/환경 지표 분리
@@ -299,27 +300,9 @@ def show_safety_charts(data: pd.DataFrame, company: str):
         st.altair_chart(fatality_chart, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # 산재보험금 차트
+        # 안전 지표 완료 안내
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
-        st.markdown("#### 💰 산재보험금 추이")
-        
-        compensation_chart = alt.Chart(data).mark_line(
-            point=True,
-            strokeWidth=3,
-            color=get_safety_color('산재보험금')
-        ).add_selection(
-            alt.selection_point()
-        ).encode(
-            x=alt.X('연도:O', title='연도'),
-            y=alt.Y('산재보험금(백만원):Q', title='보험금 (백만원)', scale=alt.Scale(zero=False)),
-            tooltip=['연도:O', '산재보험금(백만원):Q']
-        ).properties(
-            width='container',
-            height=300,
-            title=f"{company} 산재보험금 연도별 추이"
-        ).interactive()
-        
-        st.altair_chart(compensation_chart, use_container_width=True)
+        st.info("✅ 안전 지표 분석이 완료되었습니다. 환경 지표는 **환경 지표** 탭에서 확인하세요.")
         st.markdown('</div>', unsafe_allow_html=True)
 
 def show_environment_charts(data: pd.DataFrame, company: str):
@@ -380,6 +363,37 @@ def show_environment_charts(data: pd.DataFrame, company: str):
         
         st.altair_chart(renewable_chart, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
+        
+        # 재생에너지량 차트 (새로 추가)
+        if '재생에너지량(GWh)' in data.columns:
+            energy_data = data.dropna(subset=['재생에너지량(GWh)'])
+            
+            if not energy_data.empty:
+                st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+                st.markdown("#### ⚡ 재생에너지량 추이")
+                
+                energy_amount_chart = alt.Chart(energy_data).mark_line(
+                    point=True,
+                    strokeWidth=3,
+                    color=get_environment_color('재생에너지')
+                ).add_selection(
+                    alt.selection_point()
+                ).encode(
+                    x=alt.X('연도:O', title='연도'),
+                    y=alt.Y('재생에너지량(GWh):Q', title='재생에너지량 (GWh)', scale=alt.Scale(zero=False)),
+                    tooltip=['연도:O', '재생에너지량(GWh):Q']
+                ).properties(
+                    width='container',
+                    height=300,
+                    title=f"{company} 재생에너지량 연도별 추이"
+                ).interactive()
+                
+                st.altair_chart(energy_amount_chart, use_container_width=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+            else:
+                st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+                st.info("재생에너지량 데이터가 아직 제공되지 않았습니다.")
+                st.markdown('</div>', unsafe_allow_html=True)
         
         # 재활용률 차트
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)

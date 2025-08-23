@@ -115,7 +115,7 @@ def show_latest_data_table():
             
             # 수치 컬럼 포맷팅
             numeric_columns = [
-                '사고율(‰)', '사망자수', '안전감사 준수율(%)', '산재보험금(백만원)',
+                '사고율(‰)', '사망자수', '안전감사 준수율(%)',
                 '탄소배출량(tCO₂e)', '에너지사용량(kWh/㎡)', '재생에너지비율(%)',
                 '건설폐기물(ton)', '재활용률(%)'
             ]
@@ -123,13 +123,13 @@ def show_latest_data_table():
             for col in numeric_columns:
                 if col in formatted_data.columns:
                     if '(%)' in col:
-                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}%")
+                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}%" if x is not None else "N/A")
                     elif col == '사고율(‰)':
-                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}‰")
+                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}‰" if x is not None else "N/A")
                     elif col in ['탄소배출량(tCO₂e)', '건설폐기물(ton)']:
-                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:,.0f}")
+                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:,.0f}" if x is not None else "N/A")
                     else:
-                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}")
+                        formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}" if x is not None else "N/A")
             
             st.dataframe(
                 formatted_data.drop('연도', axis=1),
@@ -283,23 +283,9 @@ def show_safety_comparison_charts(data: pd.DataFrame):
         st.altair_chart(fatality_chart, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # 산재보험금 비교
+        # 안전 지표 완료 안내
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
-        st.markdown("#### 💰 업체별 산재보험금 비교")
-        
-        compensation_chart = alt.Chart(data).mark_bar(color=get_safety_color('산재보험금')).add_selection(
-            alt.selection_point()
-        ).encode(
-            x=alt.X('회사:N', title='업체', sort=alt.EncodingSortField(field='산재보험금(백만원)', order='ascending')),
-            y=alt.Y('산재보험금(백만원):Q', title='보험금 (백만원)'),
-            tooltip=['회사:N', '산재보험금(백만원):Q']
-        ).properties(
-            width='container',
-            height=300,
-            title="업체별 산재보험금 비교 (낮을수록 좋음)"
-        ).interactive()
-        
-        st.altair_chart(compensation_chart, use_container_width=True)
+        st.info("✅ 안전 지표 분석이 완료되었습니다. 환경 지표는 아래 **환경 지표** 탭에서 확인하세요.")
         st.markdown('</div>', unsafe_allow_html=True)
 
 def show_environment_comparison_charts(data: pd.DataFrame):
@@ -345,6 +331,32 @@ def show_environment_comparison_charts(data: pd.DataFrame):
         
         st.altair_chart(renewable_chart, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
+        
+        # 재생에너지량 비교 (새로 추가)
+        if '재생에너지량(GWh)' in data.columns:
+            st.markdown('<div class="chart-container">', unsafe_allow_html=True)
+            st.markdown("#### ⚡ 업체별 재생에너지량 비교")
+            
+            # null 값이 있는 경우 처리
+            energy_data = data.dropna(subset=['재생에너지량(GWh)'])
+            
+            if not energy_data.empty:
+                energy_amount_chart = alt.Chart(energy_data).mark_bar(color=get_environment_color('재생에너지')).add_selection(
+                    alt.selection_point()
+                ).encode(
+                    x=alt.X('회사:N', title='업체', sort=alt.EncodingSortField(field='재생에너지량(GWh)', order='descending')),
+                    y=alt.Y('재생에너지량(GWh):Q', title='재생에너지량 (GWh)'),
+                    tooltip=['회사:N', '재생에너지량(GWh):Q']
+                ).properties(
+                    width='container',
+                    height=300,
+                    title="업체별 재생에너지량 비교 (높을수록 좋음)"
+                ).interactive()
+                
+                st.altair_chart(energy_amount_chart, use_container_width=True)
+            else:
+                st.info("재생에너지량 데이터가 아직 제공되지 않았습니다.")
+            st.markdown('</div>', unsafe_allow_html=True)
         
         # 재활용률 비교
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
@@ -548,7 +560,7 @@ def calculate_esg_scores(data: pd.DataFrame) -> pd.DataFrame:
     scoring_data['사고율점수'] = 100 - (scoring_data['사고율(‰)'] / scoring_data['사고율(‰)'].max()) * 50
     scoring_data['사망자점수'] = 100 - (scoring_data['사망자수'] / max(scoring_data['사망자수'].max(), 1)) * 50
     scoring_data['안전감사점수'] = scoring_data['안전감사 준수율(%)']
-    scoring_data['산재보험점수'] = 100 - (scoring_data['산재보험금(백만원)'] / scoring_data['산재보험금(백만원)'].max()) * 50
+    # 산재보험금 지표는 새로운 API에서 제거됨
     
     # 환경 점수 계산
     scoring_data['탄소배출점수'] = 100 - (scoring_data['탄소배출량(tCO₂e)'] / scoring_data['탄소배출량(tCO₂e)'].max()) * 50
@@ -557,11 +569,11 @@ def calculate_esg_scores(data: pd.DataFrame) -> pd.DataFrame:
     scoring_data['폐기물점수'] = 100 - (scoring_data['건설폐기물(ton)'] / scoring_data['건설폐기물(ton)'].max()) * 50
     scoring_data['재활용점수'] = scoring_data['재활용률(%)']
     
-    # 카테고리별 평균 점수
+    # 카테고리별 평균 점수 (산재보험금 제거)
     scoring_data['안전점수'] = (
         scoring_data['사고율점수'] + scoring_data['사망자점수'] + 
-        scoring_data['안전감사점수'] + scoring_data['산재보험점수']
-    ) / 4
+        scoring_data['안전감사점수']
+    ) / 3
     
     scoring_data['환경점수'] = (
         scoring_data['탄소배출점수'] + scoring_data['에너지점수'] + 
