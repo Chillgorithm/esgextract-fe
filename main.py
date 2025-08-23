@@ -65,6 +65,84 @@ st.markdown("""
         border: 1px solid #b3d9ff;
         margin: 1rem 0;
     }
+    
+    /* 반응형 차트 컨테이너 */
+    .chart-container {
+        background-color: #ffffff;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        margin-bottom: 1rem;
+        overflow-x: auto;
+    }
+    
+    /* 모바일 대응 */
+    @media (max-width: 768px) {
+        .main-header {
+            font-size: 2rem;
+        }
+        
+        .chart-container {
+            padding: 0.5rem;
+        }
+        
+        .mode-selector {
+            padding: 1rem;
+        }
+    }
+    
+    /* 태블릿 대응 */
+    @media (max-width: 1024px) {
+        .main-header {
+            font-size: 2.2rem;
+        }
+    }
+    
+    /* 애니메이션 효과 */
+    .chart-container {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .chart-container:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .metric-card {
+        transition: transform 0.2s ease;
+    }
+    
+    .metric-card:hover {
+        transform: scale(1.02);
+    }
+    
+    .mode-selector button:hover {
+        transform: translateY(-1px);
+        transition: transform 0.2s ease;
+    }
+    
+    /* 페이드인 애니메이션 */
+    .main-header {
+        animation: fadeInDown 0.8s ease-out;
+    }
+    
+    .info-box {
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+    
+    .mode-selector {
+        animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+    
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -171,6 +249,15 @@ def show_data_overview():
                 formatted_data.drop('연도', axis=1),
                 use_container_width=True,
                 hide_index=True
+            )
+            
+            # CSV 다운로드 버튼
+            csv_data = latest_data.to_csv(index=False, encoding='utf-8-sig')
+            st.download_button(
+                label="📥 CSV로 다운로드",
+                data=csv_data,
+                file_name=f"ESG_데이터_{latest_data.iloc[0]['연도']}.csv",
+                mime="text/csv"
             )
         else:
             st.warning("데이터를 불러올 수 없습니다.")

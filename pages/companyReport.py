@@ -19,6 +19,12 @@ from utils.data_loader import (
     get_latest_year_data,
     get_multi_company_data
 )
+from utils.chart_styles import (
+    get_safety_color,
+    get_environment_color,
+    get_company_color,
+    ESG_COLORS
+)
 
 # 페이지 설정
 st.set_page_config(
@@ -205,7 +211,7 @@ def show_safety_comparison_charts(data: pd.DataFrame):
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
         st.markdown("#### 📉 업체별 사고율 비교")
         
-        accident_chart = alt.Chart(data).mark_bar(color='#ff6b6b').add_selection(
+        accident_chart = alt.Chart(data).mark_bar(color=get_safety_color('사고율')).add_selection(
             alt.selection_point()
         ).encode(
             x=alt.X('회사:N', title='업체', sort=alt.EncodingSortField(field='사고율(‰)', order='ascending')),
@@ -224,7 +230,7 @@ def show_safety_comparison_charts(data: pd.DataFrame):
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
         st.markdown("#### 📋 업체별 안전감사 준수율 비교")
         
-        audit_chart = alt.Chart(data).mark_bar(color='#4ecdc4').add_selection(
+        audit_chart = alt.Chart(data).mark_bar(color=get_safety_color('안전감사')).add_selection(
             alt.selection_point()
         ).encode(
             x=alt.X('회사:N', title='업체', sort=alt.EncodingSortField(field='안전감사 준수율(%)', order='descending')),
@@ -244,7 +250,7 @@ def show_safety_comparison_charts(data: pd.DataFrame):
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
         st.markdown("#### ⚠️ 업체별 사망자수 비교")
         
-        fatality_chart = alt.Chart(data).mark_bar(color='#ffa726').add_selection(
+        fatality_chart = alt.Chart(data).mark_bar(color=get_safety_color('사망자수')).add_selection(
             alt.selection_point()
         ).encode(
             x=alt.X('회사:N', title='업체', sort=alt.EncodingSortField(field='사망자수', order='ascending')),
@@ -263,7 +269,7 @@ def show_safety_comparison_charts(data: pd.DataFrame):
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
         st.markdown("#### 💰 업체별 산재보험금 비교")
         
-        compensation_chart = alt.Chart(data).mark_bar(color='#9c88ff').add_selection(
+        compensation_chart = alt.Chart(data).mark_bar(color=get_safety_color('산재보험금')).add_selection(
             alt.selection_point()
         ).encode(
             x=alt.X('회사:N', title='업체', sort=alt.EncodingSortField(field='산재보험금(백만원)', order='ascending')),
@@ -288,7 +294,7 @@ def show_environment_comparison_charts(data: pd.DataFrame):
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
         st.markdown("#### 🌍 업체별 탄소배출량 비교")
         
-        carbon_chart = alt.Chart(data).mark_bar(color='#e74c3c').add_selection(
+        carbon_chart = alt.Chart(data).mark_bar(color=get_environment_color('탄소배출량')).add_selection(
             alt.selection_point()
         ).encode(
             x=alt.X('회사:N', title='업체', sort=alt.EncodingSortField(field='탄소배출량(tCO₂e)', order='ascending')),
@@ -307,7 +313,7 @@ def show_environment_comparison_charts(data: pd.DataFrame):
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
         st.markdown("#### ⚡ 업체별 재생에너지비율 비교")
         
-        renewable_chart = alt.Chart(data).mark_bar(color='#27ae60').add_selection(
+        renewable_chart = alt.Chart(data).mark_bar(color=get_environment_color('재생에너지')).add_selection(
             alt.selection_point()
         ).encode(
             x=alt.X('회사:N', title='업체', sort=alt.EncodingSortField(field='재생에너지비율(%)', order='descending')),
@@ -326,7 +332,7 @@ def show_environment_comparison_charts(data: pd.DataFrame):
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
         st.markdown("#### ♻️ 업체별 재활용률 비교")
         
-        recycling_chart = alt.Chart(data).mark_bar(color='#16a085').add_selection(
+        recycling_chart = alt.Chart(data).mark_bar(color=get_environment_color('재활용률')).add_selection(
             alt.selection_point()
         ).encode(
             x=alt.X('회사:N', title='업체', sort=alt.EncodingSortField(field='재활용률(%)', order='descending')),
@@ -346,7 +352,7 @@ def show_environment_comparison_charts(data: pd.DataFrame):
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
         st.markdown("#### ⚡ 업체별 에너지사용량 비교")
         
-        energy_chart = alt.Chart(data).mark_bar(color='#f39c12').add_selection(
+        energy_chart = alt.Chart(data).mark_bar(color=get_environment_color('에너지사용량')).add_selection(
             alt.selection_point()
         ).encode(
             x=alt.X('회사:N', title='업체', sort=alt.EncodingSortField(field='에너지사용량(kWh/㎡)', order='ascending')),
@@ -365,7 +371,7 @@ def show_environment_comparison_charts(data: pd.DataFrame):
         st.markdown('<div class="chart-container">', unsafe_allow_html=True)
         st.markdown("#### 🗑️ 업체별 건설폐기물 비교")
         
-        waste_chart = alt.Chart(data).mark_bar(color='#8b4513').add_selection(
+        waste_chart = alt.Chart(data).mark_bar(color=get_environment_color('폐기물')).add_selection(
             alt.selection_point()
         ).encode(
             x=alt.X('회사:N', title='업체', sort=alt.EncodingSortField(field='건설폐기물(ton)', order='ascending')),
@@ -471,8 +477,8 @@ def show_ranking_analysis(data: pd.DataFrame):
             y=alt.Y('종합점수:Q', title='ESG 점수'),
             color=alt.condition(
                 alt.datum.종합점수 > avg_score,
-                alt.value('#28a745'),  # 평균 이상: 녹색
-                alt.value('#dc3545')   # 평균 이하: 빨간색
+                alt.value(ESG_COLORS['status']['good']),   # 평균 이상: 녹색
+                alt.value(ESG_COLORS['status']['danger'])  # 평균 이하: 빨간색
             ),
             tooltip=['회사:N', '종합점수:Q', '안전점수:Q', '환경점수:Q']
         ).properties(
@@ -483,7 +489,7 @@ def show_ranking_analysis(data: pd.DataFrame):
         
         # 평균선 추가
         avg_line = alt.Chart(pd.DataFrame({'avg': [avg_score]})).mark_rule(
-            color='orange',
+            color=ESG_COLORS['status']['warning'],
             strokeWidth=2,
             strokeDash=[5, 5]
         ).encode(y='avg:Q')
@@ -579,7 +585,7 @@ def create_radar_chart(radar_data: pd.DataFrame):
         y=alt.Y('점수:Q', title='점수 (0-100)', scale=alt.Scale(domain=[0, 100])),
         color=alt.Color('카테고리:N', 
                        scale=alt.Scale(domain=['안전', '환경'], 
-                                     range=['#ff6b6b', '#27ae60']),
+                                     range=[ESG_COLORS['status']['danger'], ESG_COLORS['status']['good']]),
                        legend=alt.Legend(title="ESG 영역")),
         xOffset=alt.XOffset('카테고리:N'),
         tooltip=['회사:N', '카테고리:N', '점수:Q']

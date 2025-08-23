@@ -18,6 +18,10 @@ from utils.data_loader import (
     get_latest_year_data,
     get_company_trend_data
 )
+from utils.chart_styles import (
+    get_safety_color,
+    get_environment_color
+)
 
 # 페이지 설정
 st.set_page_config(
@@ -215,7 +219,7 @@ def show_safety_charts(data: pd.DataFrame, company: str):
         accident_chart = alt.Chart(data).mark_line(
             point=True,
             strokeWidth=3,
-            color='#ff6b6b'
+            color=get_safety_color('사고율')
         ).add_selection(
             alt.selection_point()
         ).encode(
@@ -229,6 +233,17 @@ def show_safety_charts(data: pd.DataFrame, company: str):
         ).interactive()
         
         st.altair_chart(accident_chart, use_container_width=True)
+        
+        # 간단한 인사이트 표시
+        if len(data) > 1:
+            current_rate = data.iloc[-1]['사고율(‰)']
+            previous_rate = data.iloc[-2]['사고율(‰)'] if len(data) > 1 else current_rate
+            change = current_rate - previous_rate
+            
+            if abs(change) > 0.1:
+                trend_color = "🔻" if change < 0 else "🔺"
+                st.info(f"{trend_color} 전년 대비 {abs(change):.1f}‰ {'감소' if change < 0 else '증가'}")
+        
         st.markdown('</div>', unsafe_allow_html=True)
         
         # 안전감사 준수율 차트
@@ -238,7 +253,7 @@ def show_safety_charts(data: pd.DataFrame, company: str):
         audit_chart = alt.Chart(data).mark_line(
             point=True,
             strokeWidth=3,
-            color='#4ecdc4'
+            color=get_safety_color('안전감사')
         ).add_selection(
             alt.selection_point()
         ).encode(
@@ -260,7 +275,7 @@ def show_safety_charts(data: pd.DataFrame, company: str):
         st.markdown("#### ⚠️ 사망자수 추이")
         
         fatality_chart = alt.Chart(data).mark_bar(
-            color='#ffa726',
+            color=get_safety_color('사망자수'),
             width=50
         ).add_selection(
             alt.selection_point()
@@ -284,7 +299,7 @@ def show_safety_charts(data: pd.DataFrame, company: str):
         compensation_chart = alt.Chart(data).mark_line(
             point=True,
             strokeWidth=3,
-            color='#9c88ff'
+            color=get_safety_color('산재보험금')
         ).add_selection(
             alt.selection_point()
         ).encode(
@@ -314,11 +329,11 @@ def show_environment_charts(data: pd.DataFrame, company: str):
         st.markdown("#### 🌍 탄소배출량 추이")
         
         carbon_chart = alt.Chart(data).mark_area(
-            line={'color': '#2e8b57'},
+            line={'color': get_environment_color('탄소배출량')},
             color=alt.Gradient(
                 gradient='linear',
-                stops=[alt.GradientStop(color='#2e8b57', offset=0),
-                       alt.GradientStop(color='#90ee90', offset=1)],
+                stops=[alt.GradientStop(color=get_environment_color('탄소배출량'), offset=0),
+                       alt.GradientStop(color='#FFE5E5', offset=1)],
                 x1=1, x2=1, y1=1, y2=0
             )
         ).add_selection(
@@ -343,7 +358,7 @@ def show_environment_charts(data: pd.DataFrame, company: str):
         renewable_chart = alt.Chart(data).mark_line(
             point=True,
             strokeWidth=3,
-            color='#32cd32'
+            color=get_environment_color('재생에너지')
         ).add_selection(
             alt.selection_point()
         ).encode(
@@ -366,7 +381,7 @@ def show_environment_charts(data: pd.DataFrame, company: str):
         recycling_chart = alt.Chart(data).mark_line(
             point=True,
             strokeWidth=3,
-            color='#20b2aa'
+            color=get_environment_color('재활용률')
         ).add_selection(
             alt.selection_point()
         ).encode(
@@ -390,7 +405,7 @@ def show_environment_charts(data: pd.DataFrame, company: str):
         energy_chart = alt.Chart(data).mark_line(
             point=True,
             strokeWidth=3,
-            color='#ffd700'
+            color=get_environment_color('에너지사용량')
         ).add_selection(
             alt.selection_point()
         ).encode(
@@ -411,7 +426,7 @@ def show_environment_charts(data: pd.DataFrame, company: str):
         st.markdown("#### 🗑️ 건설폐기물 추이")
         
         waste_chart = alt.Chart(data).mark_bar(
-            color='#cd853f',
+            color=get_environment_color('폐기물'),
             width=50
         ).add_selection(
             alt.selection_point()

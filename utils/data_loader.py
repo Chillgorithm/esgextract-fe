@@ -8,7 +8,7 @@ import streamlit as st
 from typing import Dict, List, Any
 import os
 
-@st.cache_data
+@st.cache_data(ttl=300, show_spinner="데이터 로딩 중...")
 def load_data() -> Dict[str, Any]:
     """
     data.json 파일을 로드하고 캐시합니다.
@@ -48,6 +48,7 @@ def get_years() -> List[str]:
     data = load_data()
     return data.get('metadata', {}).get('years', [])
 
+@st.cache_data(ttl=300)
 def get_latest_year_data() -> pd.DataFrame:
     """
     최신 연도의 모든 회사 데이터를 DataFrame으로 반환합니다.
@@ -92,6 +93,7 @@ def get_latest_year_data() -> pd.DataFrame:
     
     return pd.DataFrame(rows)
 
+@st.cache_data(ttl=300)
 def get_company_trend_data(company: str) -> pd.DataFrame:
     """
     특정 회사의 연도별 트렌드 데이터를 반환합니다.
@@ -137,6 +139,7 @@ def get_company_trend_data(company: str) -> pd.DataFrame:
     
     return pd.DataFrame(rows)
 
+@st.cache_data(ttl=300)
 def get_multi_company_data(companies: List[str], year: str = None) -> pd.DataFrame:
     """
     여러 회사의 데이터를 비교용으로 반환합니다.
