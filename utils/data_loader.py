@@ -1,5 +1,5 @@
 """
-데이터 로딩 및 전처리 유틸리티 함수들
+Data loading and preprocessing utility functions
 """
 
 import json
@@ -8,13 +8,13 @@ import streamlit as st
 from typing import Dict, List, Any
 import os
 
-@st.cache_data(ttl=300, show_spinner="데이터 로딩 중...")
+@st.cache_data(ttl=300, show_spinner="Loading data...")
 def load_data() -> Dict[str, Any]:
     """
-    data.json 파일을 로드하고 캐시합니다.
+    Load and cache data.json file.
     
     Returns:
-        Dict: 로드된 데이터
+        Dict: Loaded data
     """
     try:
         data_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'data.json')
@@ -22,28 +22,28 @@ def load_data() -> Dict[str, Any]:
             data = json.load(f)
         return data
     except FileNotFoundError:
-        st.error("데이터 파일을 찾을 수 없습니다.")
+        st.error("Data file not found.")
         return {}
     except json.JSONDecodeError:
-        st.error("데이터 파일 형식이 올바르지 않습니다.")
+        st.error("Data file format is invalid.")
         return {}
 
 def get_companies() -> List[str]:
     """
-    사용 가능한 회사 목록을 반환합니다.
+    Returns list of available companies.
     
     Returns:
-        List[str]: 회사명 리스트
+        List[str]: List of company names
     """
     data = load_data()
     return data.get('metadata', {}).get('companies', [])
 
 def get_years() -> List[str]:
     """
-    사용 가능한 연도 목록을 반환합니다.
+    Returns list of available years.
     
     Returns:
-        List[str]: 연도 리스트
+        List[str]: List of years
     """
     data = load_data()
     return data.get('metadata', {}).get('years', [])
@@ -51,10 +51,10 @@ def get_years() -> List[str]:
 @st.cache_data(ttl=300)
 def get_latest_year_data() -> pd.DataFrame:
     """
-    최신 연도의 모든 회사 데이터를 DataFrame으로 반환합니다.
+    Returns all company data for the latest year as DataFrame.
     
     Returns:
-        pd.DataFrame: 최신 연도 데이터
+        pd.DataFrame: Latest year data
     """
     data = load_data()
     years = get_years()
@@ -71,17 +71,17 @@ def get_latest_year_data() -> pd.DataFrame:
             
         if company_data.get('year') == int(latest_year):
             row = {
-                '회사': company_data.get('company_name', ''),
-                '연도': company_data.get('year', ''),
-                '사고율(‰)': company_data.get('accident_rate', 0),
-                '사망자수': company_data.get('fatality_rate', 0),
-                '안전감사 준수율(%)': company_data.get('safety_inspection_compliance_rate', 0),
-                '탄소배출량(tCO₂e)': company_data.get('carbon_emissions', 0),
-                '에너지사용량(kWh/㎡)': company_data.get('energy_consumption', 0),
-                '재생에너지비율(%)': company_data.get('renewable_energy_ratio', 0),
-                '재생에너지량(GWh)': company_data.get('renewable_energy_amount', 0),
-                '건설폐기물(ton)': company_data.get('construction_waste', 0),
-                '재활용률(%)': company_data.get('recycling_rate', 0)
+                'Company': company_data.get('company_name', ''),
+                'Year': company_data.get('year', ''),
+                'Accident Rate (‰)': company_data.get('accident_rate', 0),
+                'Fatalities': company_data.get('fatality_rate', 0),
+                'Safety Audit Compliance (%)': company_data.get('safety_inspection_compliance_rate', 0),
+                'Carbon Emissions (tCO₂e)': company_data.get('carbon_emissions', 0),
+                'Energy Consumption (kWh/㎡)': company_data.get('energy_consumption', 0),
+                'Renewable Energy Ratio (%)': company_data.get('renewable_energy_ratio', 0),
+                'Renewable Energy Amount (GWh)': company_data.get('renewable_energy_amount', 0),
+                'Construction Waste (ton)': company_data.get('construction_waste', 0),
+                'Recycling Rate (%)': company_data.get('recycling_rate', 0)
             }
             rows.append(row)
     
@@ -90,13 +90,13 @@ def get_latest_year_data() -> pd.DataFrame:
 @st.cache_data(ttl=300)
 def get_company_trend_data(company: str) -> pd.DataFrame:
     """
-    특정 회사의 연도별 트렌드 데이터를 반환합니다.
+    Returns year-over-year trend data for a specific company.
     
     Args:
-        company (str): 회사명
+        company (str): Company name
         
     Returns:
-        pd.DataFrame: 연도별 트렌드 데이터
+        pd.DataFrame: Year-over-year trend data
     """
     data = load_data()
     
@@ -107,36 +107,36 @@ def get_company_trend_data(company: str) -> pd.DataFrame:
             
         if company_data.get('company_name') == company:
             row = {
-                '회사': company_data.get('company_name', ''),
-                '연도': company_data.get('year', ''),
-                '사고율(‰)': company_data.get('accident_rate', 0),
-                '사망자수': company_data.get('fatality_rate', 0),
-                '안전감사 준수율(%)': company_data.get('safety_inspection_compliance_rate', 0),
-                '탄소배출량(tCO₂e)': company_data.get('carbon_emissions', 0),
-                '에너지사용량(kWh/㎡)': company_data.get('energy_consumption', 0),
-                '재생에너지비율(%)': company_data.get('renewable_energy_ratio', 0),
-                '재생에너지량(GWh)': company_data.get('renewable_energy_amount', 0),
-                '건설폐기물(ton)': company_data.get('construction_waste', 0),
-                '재활용률(%)': company_data.get('recycling_rate', 0)
+                'Company': company_data.get('company_name', ''),
+                'Year': company_data.get('year', ''),
+                'Accident Rate (‰)': company_data.get('accident_rate', 0),
+                'Fatalities': company_data.get('fatality_rate', 0),
+                'Safety Audit Compliance (%)': company_data.get('safety_inspection_compliance_rate', 0),
+                'Carbon Emissions (tCO₂e)': company_data.get('carbon_emissions', 0),
+                'Energy Consumption (kWh/㎡)': company_data.get('energy_consumption', 0),
+                'Renewable Energy Ratio (%)': company_data.get('renewable_energy_ratio', 0),
+                'Renewable Energy Amount (GWh)': company_data.get('renewable_energy_amount', 0),
+                'Construction Waste (ton)': company_data.get('construction_waste', 0),
+                'Recycling Rate (%)': company_data.get('recycling_rate', 0)
             }
             rows.append(row)
     
     df = pd.DataFrame(rows)
     if not df.empty:
-        df = df.sort_values('연도')
+        df = df.sort_values('Year')
     return df
 
 @st.cache_data(ttl=300)
 def get_multi_company_data(companies: List[str], year: str = None) -> pd.DataFrame:
     """
-    여러 회사의 데이터를 비교용으로 반환합니다.
+    Returns data for multiple companies for comparison.
     
     Args:
-        companies (List[str]): 회사명 리스트
-        year (str, optional): 특정 연도. None일 경우 최신 연도 사용
+        companies (List[str]): List of company names
+        year (str, optional): Specific year. Uses latest year if None
         
     Returns:
-        pd.DataFrame: 다중 회사 비교 데이터
+        pd.DataFrame: Multi-company comparison data
     """
     data = load_data()
     
@@ -154,17 +154,17 @@ def get_multi_company_data(companies: List[str], year: str = None) -> pd.DataFra
         
         if company_name in companies and data_year == int(year):
             row = {
-                '회사': company_name,
-                '연도': data_year,
-                '사고율(‰)': company_data.get('accident_rate', 0),
-                '사망자수': company_data.get('fatality_rate', 0),
-                '안전감사 준수율(%)': company_data.get('safety_inspection_compliance_rate', 0),
-                '탄소배출량(tCO₂e)': company_data.get('carbon_emissions', 0),
-                '에너지사용량(kWh/㎡)': company_data.get('energy_consumption', 0),
-                '재생에너지비율(%)': company_data.get('renewable_energy_ratio', 0),
-                '재생에너지량(GWh)': company_data.get('renewable_energy_amount', 0),
-                '건설폐기물(ton)': company_data.get('construction_waste', 0),
-                '재활용률(%)': company_data.get('recycling_rate', 0)
+                'Company': company_name,
+                'Year': data_year,
+                'Accident Rate (‰)': company_data.get('accident_rate', 0),
+                'Fatalities': company_data.get('fatality_rate', 0),
+                'Safety Audit Compliance (%)': company_data.get('safety_inspection_compliance_rate', 0),
+                'Carbon Emissions (tCO₂e)': company_data.get('carbon_emissions', 0),
+                'Energy Consumption (kWh/㎡)': company_data.get('energy_consumption', 0),
+                'Renewable Energy Ratio (%)': company_data.get('renewable_energy_ratio', 0),
+                'Renewable Energy Amount (GWh)': company_data.get('renewable_energy_amount', 0),
+                'Construction Waste (ton)': company_data.get('construction_waste', 0),
+                'Recycling Rate (%)': company_data.get('recycling_rate', 0)
             }
             rows.append(row)
     
@@ -172,23 +172,23 @@ def get_multi_company_data(companies: List[str], year: str = None) -> pd.DataFra
 
 def get_units() -> Dict[str, str]:
     """
-    각 지표의 단위 정보를 반환합니다.
+    Returns unit information for each indicator.
     
     Returns:
-        Dict[str, str]: 지표별 단위 정보
+        Dict[str, str]: Unit information by indicator
     """
     data = load_data()
     return data.get('metadata', {}).get('units', {})
 
 def get_all_company_data_by_year(year: str) -> pd.DataFrame:
     """
-    특정 연도의 모든 회사 데이터를 반환합니다.
+    Returns all company data for a specific year.
     
     Args:
-        year (str): 연도
+        year (str): Year
         
     Returns:
-        pd.DataFrame: 해당 연도의 모든 회사 데이터
+        pd.DataFrame: All company data for the specified year
     """
     data = load_data()
     
@@ -199,17 +199,17 @@ def get_all_company_data_by_year(year: str) -> pd.DataFrame:
             
         if company_data.get('year') == int(year):
             row = {
-                '회사': company_data.get('company_name', ''),
-                '연도': company_data.get('year', ''),
-                '사고율(‰)': company_data.get('accident_rate', 0),
-                '사망자수': company_data.get('fatality_rate', 0),
-                '안전감사 준수율(%)': company_data.get('safety_inspection_compliance_rate', 0),
-                '탄소배출량(tCO₂e)': company_data.get('carbon_emissions', 0),
-                '에너지사용량(kWh/㎡)': company_data.get('energy_consumption', 0),
-                '재생에너지비율(%)': company_data.get('renewable_energy_ratio', 0),
-                '재생에너지량(GWh)': company_data.get('renewable_energy_amount', 0),
-                '건설폐기물(ton)': company_data.get('construction_waste', 0),
-                '재활용률(%)': company_data.get('recycling_rate', 0)
+                'Company': company_data.get('company_name', ''),
+                'Year': company_data.get('year', ''),
+                'Accident Rate (‰)': company_data.get('accident_rate', 0),
+                'Fatalities': company_data.get('fatality_rate', 0),
+                'Safety Audit Compliance (%)': company_data.get('safety_inspection_compliance_rate', 0),
+                'Carbon Emissions (tCO₂e)': company_data.get('carbon_emissions', 0),
+                'Energy Consumption (kWh/㎡)': company_data.get('energy_consumption', 0),
+                'Renewable Energy Ratio (%)': company_data.get('renewable_energy_ratio', 0),
+                'Renewable Energy Amount (GWh)': company_data.get('renewable_energy_amount', 0),
+                'Construction Waste (ton)': company_data.get('construction_waste', 0),
+                'Recycling Rate (%)': company_data.get('recycling_rate', 0)
             }
             rows.append(row)
     

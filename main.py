@@ -1,6 +1,6 @@
 """
-ESG 건설업체 데이터 대시보드
-메인 페이지
+ESG Construction Company Data Dashboard
+Main Page
 """
 
 import streamlit as st
@@ -8,7 +8,7 @@ import pandas as pd
 import sys
 import os
 
-# 프로젝트 루트 디렉토리를 sys.path에 추가
+# Add project root directory to sys.path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from utils.data_loader import (
@@ -18,15 +18,15 @@ from utils.data_loader import (
     get_latest_year_data
 )
 
-# 페이지 설정
+# Page configuration
 st.set_page_config(
-    page_title="ESG 건설업체 대시보드",
+    page_title="ESG Construction Company Dashboard",
     page_icon="🏗️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# 커스텀 CSS
+# Custom CSS
 st.markdown("""
 <style>
     .main-header {
@@ -219,53 +219,53 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def main():
-    """메인 페이지 함수"""
+    """Main page function"""
     
-    # 헤더
+    # Header
     st.markdown("""
     <div style="text-align: center; margin-bottom: 2rem;">
         <h1 style="font-size: 3rem; font-weight: bold; color: #1f77b4; margin-bottom: 0.5rem;">
             ESGExtract
         </h1>
         <p style="font-size: 1.2rem; color: #666; margin: 0; font-weight: 300;">
-            건설업체 ESG 데이터 대시보드
+            Construction Company ESG Data Dashboard
         </p>
     </div>
     """, unsafe_allow_html=True)
     
 
     
-    # 모드 선택 섹션
-    st.markdown('### 📊 분석 모드 선택')
+    # Mode selection section
+    st.markdown('### 📊 Select Analysis Mode')
     
     col1, col2 = st.columns(2)
     
     with col1:
-        if st.button("📈 연도별 비교 분석", use_container_width=True, type="secondary"):
+        if st.button("📈 Year-over-Year Analysis", use_container_width=True, type="secondary"):
             st.session_state.analysis_mode = "year_comparison"
             st.rerun()
     
     with col2:
-        if st.button("🏢 업체별 비교 분석", use_container_width=True, type="secondary"):
+        if st.button("🏢 Company Comparison Analysis", use_container_width=True, type="secondary"):
             st.session_state.analysis_mode = "company_comparison"
             st.rerun()
     
-    # 현재 선택된 모드 표시 및 페이지 라우팅
+    # Display selected mode and page routing
     if 'analysis_mode' in st.session_state:
         if st.session_state.analysis_mode == "year_comparison":
             show_year_comparison_page()
         elif st.session_state.analysis_mode == "company_comparison":
             show_company_comparison_page()
     else:
-        # 기본적으로 데이터 개요 표시
+        # Display data overview by default
         show_data_overview()
 
 def show_data_overview():
-    """데이터 개요 페이지"""
+    """Data overview page"""
     st.markdown("---")
-    st.markdown('### 📋 데이터 개요')
+    st.markdown('### 📋 Data Overview')
     
-    # 기본 정보
+    # Basic information
     companies = get_companies()
     years = get_years()
     
@@ -274,8 +274,8 @@ def show_data_overview():
     with col1:
         st.markdown(f"""
         <div class="metric-box">
-            <div class="metric-value">{len(companies)}개</div>
-            <div class="metric-label">분석 대상 업체</div>
+            <div class="metric-value">{len(companies)} Companies</div>
+            <div class="metric-label">Analysis Target</div>
         </div>
         """, unsafe_allow_html=True)
         
@@ -283,115 +283,115 @@ def show_data_overview():
         st.markdown(f"""
         <div class="metric-box">
             <div class="metric-value">{min(years)} - {max(years)}</div>
-            <div class="metric-label">데이터 기간</div>
+            <div class="metric-label">Data Period</div>
         </div>
         """, unsafe_allow_html=True)
         
     with col3:
         st.markdown("""
         <div class="metric-box">
-            <div class="metric-value">9개</div>
-            <div class="metric-label">ESG 지표</div>
+            <div class="metric-value">9 Indicators</div>
+            <div class="metric-label">ESG Metrics</div>
         </div>
         """, unsafe_allow_html=True)
     
-    # 구분선과 간격
+    # Separator and spacing
     st.markdown("---")
     
-    # 최신 연도 데이터 테이블
-    st.markdown("### 📊 최신 연도 데이터 (2025년)")
+    # Latest year data table
+    st.markdown("### 📊 Latest Year Data (2025)")
     
-    with st.spinner("📊 데이터를 불러오는 중..."):
+    with st.spinner("📊 Loading data..."):
         try:
-            # 프로그레스 바 표시
+            # Display progress bar
             progress_placeholder = st.empty()
             progress_placeholder.markdown("""
             <div class="progress-container">
                 <div class="progress-bar" style="width: 100%;"></div>
             </div>
-            <div class="loading-text">ESG 데이터 로딩 중...</div>
+            <div class="loading-text">Loading ESG data...</div>
             """, unsafe_allow_html=True)
             
             latest_data = get_latest_year_data()
-            progress_placeholder.empty()  # 프로그레스 바 제거
+            progress_placeholder.empty()  # Remove progress bar
             
             if not latest_data.empty:
-                # 데이터 포맷팅
+                # Data formatting
                 formatted_data = latest_data.copy()
             
-                # 수치 컬럼 포맷팅
+                # Format numeric columns
                 numeric_columns = [
-                    '사고율(‰)', '사망자수', '안전감사 준수율(%)', '재생에너지량(GWh)',
-                    '탄소배출량(tCO₂e)', '에너지사용량(kWh/㎡)', '재생에너지비율(%)',
-                    '건설폐기물(ton)', '재활용률(%)'
+                    'Accident Rate (‰)', 'Fatalities', 'Safety Audit Compliance (%)', 'Renewable Energy Amount (GWh)',
+                    'Carbon Emissions (tCO₂e)', 'Energy Consumption (kWh/㎡)', 'Renewable Energy Ratio (%)',
+                    'Construction Waste (ton)', 'Recycling Rate (%)'
                 ]
                 
                 for col in numeric_columns:
                     if col in formatted_data.columns:
                         if '(%)' in col:
                             formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}%" if x is not None else "N/A")
-                        elif col == '사고율(‰)':
+                        elif col == 'Accident Rate (‰)':
                             formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}‰" if x is not None else "N/A")
-                        elif col in ['탄소배출량(tCO₂e)', '건설폐기물(ton)']:
+                        elif col in ['Carbon Emissions (tCO₂e)', 'Construction Waste (ton)']:
                             formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:,.0f}" if x is not None else "N/A")
                         else:
                             formatted_data[col] = formatted_data[col].apply(lambda x: f"{x:.1f}" if x is not None else "N/A")
                 
                 st.dataframe(
-                    formatted_data.drop('연도', axis=1),
+                    formatted_data.drop('Year', axis=1),
                     use_container_width=True,
                     hide_index=True
                 )
                 
-                # CSV 다운로드 버튼
+                # CSV download button
                 csv_data = latest_data.to_csv(index=False, encoding='utf-8-sig')
                 st.download_button(
-                    label="📥 CSV로 다운로드",
+                    label="📥 Download as CSV",
                     data=csv_data,
-                    file_name=f"ESG_데이터_{latest_data.iloc[0]['연도']}.csv",
+                    file_name=f"ESG_Data_{latest_data.iloc[0]['Year']}.csv",
                     mime="text/csv"
                 )
             else:
-                st.warning("데이터를 불러올 수 없습니다.")
+                st.warning("Unable to load data.")
         except Exception as e:
-            st.error(f"데이터 로딩 중 오류가 발생했습니다: {e}")
+            st.error(f"An error occurred while loading data: {e}")
     
-    # 사용법 가이드
-    with st.expander("🆘 사용법 가이드"):
+    # Usage guide
+    with st.expander("🆘 Usage Guide"):
         st.markdown("""
-        ### 📚 **대시보드 사용 방법**
+        ### 📚 **Dashboard Usage Guide**
         
-        #### 🏠 **메인 페이지** (현재 페이지)
-        - **최신 데이터 확인**: 2025년 모든 회사의 ESG 지표를 한눈에 확인
-        - **CSV 다운로드**: 표 아래 다운로드 버튼으로 데이터 내보내기
+        #### 🏠 **Main Page** (Current Page)
+        - **View Latest Data**: Check all companies' ESG indicators for 2025 at a glance
+        - **CSV Download**: Export data using the download button below the table
         
-        #### 📈 **연도별 비교 모드**
-        1. 사이드바에서 **분석할 회사** 선택
-        2. **연도 범위** 선택 (슬라이더 사용)
-        3. **안전 지표** 탭에서 사고율, 사망자수, 안전감사 준수율, 산재보험금 추이 확인
-        4. **환경 지표** 탭에서 탄소배출량, 에너지사용량, 재생에너지비율, 재활용률 추이 확인
+        #### 📈 **Year-over-Year Mode**
+        1. Select **company to analyze** from the sidebar
+        2. Choose **year range** (using slider)
+        3. Check accident rate, fatalities, safety audit compliance trends in **Safety Metrics** tab
+        4. Check carbon emissions, energy usage, renewable energy ratio, recycling rate trends in **Environmental Metrics** tab
         
-        #### 🏢 **업체별 비교 모드**
-        1. 사이드바에서 **비교할 회사들** 선택 (최대 5개)
-        2. **안전 지표** 탭에서 회사간 안전 성과 비교
-        3. **환경 지표** 탭에서 회사간 환경 성과 비교
-        4. **순위 분석** 탭에서 종합 ESG 점수 및 레이더 차트 확인
+        #### 🏢 **Company Comparison Mode**
+        1. Select **companies to compare** from sidebar (up to 5)
+        2. Compare safety performance between companies in **Safety Metrics** tab
+        3. Compare environmental performance between companies in **Environmental Metrics** tab
+        4. Check comprehensive ESG scores and radar charts in **Ranking Analysis** tab
         
-        #### 💡 **팁**
-        - 차트 위에 마우스를 올리면 **상세 데이터** 확인 가능
-        - 차트를 **확대/축소**하려면 마우스 휠 사용
-        - 모바일에서도 **터치**로 차트 조작 가능
-        - **CSV 다운로드**로 추가 분석용 데이터 확보 가능
+        #### 💡 **Tips**
+        - Hover over charts to see **detailed data**
+        - Use mouse wheel to **zoom in/out** on charts
+        - Charts are **touch-enabled** on mobile devices
+        - Use **CSV download** to get data for additional analysis
         
-        #### ⌨️ **키보드 단축키**
-        - **F5**: 페이지 새로고침
-        - **Ctrl/Cmd + D**: CSV 다운로드 (해당 페이지에서)
-        - **Esc**: 확장된 섹션 닫기
-        - **Tab**: 다음 요소로 이동
-        - **Shift + Tab**: 이전 요소로 이동
+        #### ⌨️ **Keyboard Shortcuts**
+        - **F5**: Refresh page
+        - **Ctrl/Cmd + D**: Download CSV (on applicable pages)
+        - **Esc**: Close expanded sections
+        - **Tab**: Move to next element
+        - **Shift + Tab**: Move to previous element
         """)
         
-    # 키보드 단축키 스크립트
+    # Keyboard shortcut script
     st.markdown("""
     <script>
     document.addEventListener('keydown', function(event) {
@@ -416,34 +416,34 @@ def show_data_overview():
     </script>
     """, unsafe_allow_html=True)
     
-    with st.expander("📋 ESG 지표 설명"):
+    with st.expander("📋 ESG Metrics Description"):
         col1, col2 = st.columns(2)
         
         with col1:
             st.markdown("""
-            **🔒 안전 지표**
-            - **사고율(‰)**: 천 명당 산업재해 발생률
-            - **사망자수**: 연간 작업장 내 사망자 수
-            - **안전감사 준수율(%)**: 안전 규정 준수 비율
+            **🔒 Safety Metrics**
+            - **Accident Rate (‰)**: Industrial accident rate per thousand workers
+            - **Fatalities**: Annual workplace fatalities
+            - **Safety Audit Compliance (%)**: Safety regulation compliance rate
             """)
         
         with col2:
             st.markdown("""
-            **🌱 환경 지표**
-            - **탄소배출량(tCO₂e)**: 연간 이산화탄소 배출량
-            - **에너지사용량(kWh/㎡)**: 단위면적당 에너지 소비량
-            - **재생에너지비율(%)**: 전체 에너지 중 재생에너지 비중
-            - **재생에너지량(GWh)**: 재생에너지 절대량
-            - **건설폐기물(ton)**: 연간 건설폐기물 발생량
-            - **재활용률(%)**: 폐기물 재활용 비율
+            **🌱 Environmental Metrics**
+            - **Carbon Emissions (tCO₂e)**: Annual carbon dioxide emissions
+            - **Energy Consumption (kWh/㎡)**: Energy consumption per unit area
+            - **Renewable Energy Ratio (%)**: Share of renewable energy in total energy
+            - **Renewable Energy Amount (GWh)**: Absolute amount of renewable energy
+            - **Construction Waste (ton)**: Annual construction waste generation
+            - **Recycling Rate (%)**: Waste recycling ratio
             """)
 
 def show_year_comparison_page():
-    """연도별 비교 페이지로 리다이렉트"""
+    """Redirect to year-over-year comparison page"""
     st.switch_page("pages/yearReport.py")
 
 def show_company_comparison_page():
-    """업체별 비교 페이지로 리다이렉트"""
+    """Redirect to company comparison page"""
     st.switch_page("pages/companyReport.py")
 
 if __name__ == "__main__":
